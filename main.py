@@ -47,6 +47,17 @@ def output_path() -> str:
                          "entry.txt")
 
 
+def write_entry(path: str, text: str) -> None:
+    """Write text to path, then read it back and verify it matches."""
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    with open(path, "w", encoding="utf-8", newline="\n") as f:
+        f.write(text)
+    # Read back and verify exactly what was written.
+    with open(path, "r", encoding="utf-8") as f:
+        written = f.read()
+    assert written == text, "round-trip check failed"
+
+
 def main() -> None:
     text = ENTRY.strip()
     # Gate checks, mirroring the scorer: UTF-8 text, 1-200 characters,
@@ -66,14 +77,7 @@ def main() -> None:
         )
         assert "\n" not in line and line == line.strip()
 
-    path = output_path()
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    with open(path, "w", encoding="utf-8", newline="\n") as f:
-        f.write(text)
-    # Read back and verify exactly what was written.
-    with open(path, "r", encoding="utf-8") as f:
-        written = f.read()
-    assert written == text, "round-trip check failed"
+    write_entry(output_path(), text)
 
     for line in HOROSCOPES:
         print(line)
